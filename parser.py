@@ -1,6 +1,7 @@
 import re
 import struct
 import time
+import argparse
 import json
 
 # --- C type to Python struct format mapping ---
@@ -114,8 +115,14 @@ def parse_log(filename, log_levels, log_types, log_schema):
             logs.append(entry)
     return logs
 
-
 if __name__ == "__main__":
+    # Parse arguments
+    parser = argparse.ArgumentParser(description="LiteLog parser")
+    parser.add_argument("-f", "--file", required=True, help="Log file to parse (e.g., log.bin)")
+    args = parser.parse_args()
+    log_file_name = args.file
+    print(f"Parsing log file: {log_file_name}")
+
     # Load header
     with open("litelog.h", "r", encoding="utf-8") as f:
         code = f.read()
@@ -132,14 +139,15 @@ if __name__ == "__main__":
         print(f"  {idx}: {name} -> format='{fmt}', fields={fields}")
 
     # Parse log file
-    logs = parse_log("log.bin", log_levels, log_types, log_schema)
+    logs = parse_log(log_file_name, log_levels, log_types, log_schema)
 
     # Print logs to console
     for i, log in enumerate(logs, 1):
         print(f"[{i}] {log}")
 
     # Save logs to JSON
-    with open("log.json", "w", encoding="utf-8") as f:
+    json_file_name = log_file_name.rsplit(".", 1)[0] + ".json"
+    with open(json_file_name, "w", encoding="utf-8") as f:
         json.dump(logs, f, indent=4, ensure_ascii=False)
 
-    print(f"\nSaved {len(logs)} logs to log.json")
+    print(f"\nSaved {len(logs)} logs to {json_file_name}")

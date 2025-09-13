@@ -19,7 +19,7 @@
 #define LOG_LEVEL_WARNING (1U)
 #define LOG_LEVEL_ERROR (2U)
 #define LOG_LEVEL_FATAL (3U)
-#define LOG_LEVEL_ALL (4U)
+#define LOG_LEVEL_MAX (4U)
 
 // user-defined log data types
 #define LOG_DATA_TYPE uint16_t
@@ -27,7 +27,7 @@
 #define LOG_DATA_TYPE_EXAMPLE1 (1U)
 #define LOG_DATA_TYPE_EXAMPLE2 (2U)
 #define LOG_DATA_TYPE_EXAMPLE3 (3U)
-#define LOG_DATA_TYPE_ALL (4U)
+#define LOG_DATA_TYPE_MAX (4U)
 
 // user-defined data structure
 typedef struct
@@ -78,7 +78,7 @@ static uint32_t entry_index = 0U; // current log entry index
 #define LOG_ACTION uint16_t
 #define LOG_ACTION_NONE (0U)     // when entries are allocated, log will be auto saved
 #define LOG_ACTION_SAVE_NOW (1U) // trigger save action
-#define LOG_ACTION_ALL (2U)
+#define LOG_ACTION_MAX (2U)
 
 #define ADD_LOG(level, type, action, data, data_size) \
     add_log(level, type, action, data, data_size)
@@ -95,7 +95,7 @@ static uint32_t entry_index = 0U; // current log entry index
 bool add_log(LOG_LEVEL level, LOG_DATA_TYPE type, LOG_ACTION action, void *data, uint32_t data_size)
 {
     // check parameters
-    if (level >= LOG_LEVEL_ALL || type >= LOG_DATA_TYPE_ALL || action >= LOG_ACTION_ALL)
+    if (level >= LOG_LEVEL_MAX || type >= LOG_DATA_TYPE_MAX || action >= LOG_ACTION_MAX)
     {
         return false;
     }

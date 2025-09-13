@@ -46,11 +46,12 @@ LOG_DATA_EXAMPLE1 example1 = {
 ADD_LOG(
     LOG_LEVEL_WARNING,
     LOG_DATA_TYPE_EXAMPLE1, // user-defined log data types
-    LOG_ACTION_NONE,
+    LOG_ACTION_NONE,        // action: NONE or SAVE_NOW
     &example1,              // user-defined data structure
     LOG_DATA_TYPE_EXAMPLE1_SIZE
 );
 ```
+其中，LOG_ACTION分成NONE與SAVE_NOW，前者會等到可用entries滿的時候，自動生成log檔案，而後者是立即生成，在生成log之後，會立即清空entries
 
 這樣便能將複雜的結構化資料直接寫入 log 檔，再透過 Python 解析器轉換為 JSON，方便後續檢視與分析。  
 

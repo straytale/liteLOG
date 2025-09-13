@@ -23,9 +23,9 @@ LiteLog 定義出一套 **結構化日誌輸出框架**，並搭配 Python 腳�
 開發者可以自行定義 **log data types** 與對應的 **struct**，例如：
 
 ```c
-#define LOG_DATA_TYPE_EXAMPLE1 (1U)
+#define LOG_DATA_TYPE_EXAMPLE1 (1U) // user-defined log data type
 
-typedef struct
+typedef struct // user-defined data structure
 {
     uint16_t cpu_usage; // MAX to 0x64
     uint16_t mem_usage; // MAX to 0x64
@@ -45,9 +45,9 @@ LOG_DATA_EXAMPLE1 example1 = {
 
 ADD_LOG(
     LOG_LEVEL_WARNING,
-    LOG_DATA_TYPE_EXAMPLE1,
+    LOG_DATA_TYPE_EXAMPLE1, // user-defined log data types
     LOG_ACTION_NONE,
-    &example1,
+    &example1,              // user-defined data structure
     LOG_DATA_TYPE_EXAMPLE1_SIZE
 );
 ```

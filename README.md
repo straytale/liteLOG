@@ -12,7 +12,7 @@
 - `test.c`  
   - 範例程式，示範如何記錄日誌
 - `parser.py`  
-  - Python 腳本，解析日誌檔案並轉換成json格式
+  - Python 腳本，解析日誌檔案並轉換成 json 格式
 
 ---
 
@@ -23,16 +23,19 @@ LiteLog 定義出一套 **結構化日誌輸出框架**，並搭配 Python 腳�
 開發者可以自行定義 **log data types** 與對應的 **struct**，例如：
 
 ```c
-#define LOG_DATA_TYPE_MSG (0U)
+#define LOG_DATA_TYPE_EXAMPLE1 (1U)
 
-typedef struct {
-    char msg[64];
-} LOG_DATA_MSG, *LOG_DATA_MSG_PTR;
-
-#define LOG_DATA_TYPE_MSG_SIZE (sizeof(LOG_DATA_MSG))
+typedef struct
+{
+    uint16_t cpu_usage; // MAX to 0x64
+    uint16_t mem_usage; // MAX to 0x64
+    uint32_t thread_count;
+} LOG_DATA_EXAMPLE1, *LOG_DATA_EXAMPLE1_PTR;
+#define LOG_DATA_TYPE_EXAMPLE1_SIZE (sizeof(LOG_DATA_EXAMPLE1))
 ```
 
 並在程式中加入自訂 log：
+
 ```c
 LOG_DATA_EXAMPLE1 example1 = {
     .cpu_usage = 45,
@@ -47,6 +50,9 @@ ADD_LOG(
     &example1,
     LOG_DATA_TYPE_EXAMPLE1_SIZE
 );
+```
+
+這樣便能將複雜的結構化資料直接寫入 log 檔，再透過 Python 解析器轉換為 JSON，方便後續檢視與分析。  
 
 ---
 
@@ -58,7 +64,7 @@ gcc test.c -o test
 ./test
 ```
 
-執行後會輸出一份二進位日誌檔 "log.bin"。
+執行後會輸出一份二進位日誌檔 `log.bin`。
 
 ---
 
@@ -67,7 +73,9 @@ gcc test.c -o test
 python3 parser.py -f log.bin
 ```
 
-可將日誌轉換成人類可讀的格式，方便檢視。
+可將日誌轉換成JSON格式，方便檢視。
+
+---
 
 ### 3. 輸出範例
 ```bash
@@ -104,7 +112,7 @@ python3 parser.py -f log.bin
 ]
 ```
 
-日誌會轉換成json格式，方便檢視。
+日誌會轉換成 JSON 格式，方便檢視。
 
 ---
 
@@ -113,9 +121,5 @@ python3 parser.py -f log.bin
 - 支援等級分類（INFO / WARNING / ERROR / FATAL）  
 - 使用 Python 腳本快速解析  
 - 簡單易於整合  
-
-```
-
-這樣便能將複雜的結構化資料直接寫入 log 檔，再透過 Python 解析器轉換為 JSON，方便後續檢視與分析。  
 
 ---

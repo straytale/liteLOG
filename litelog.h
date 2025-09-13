@@ -95,10 +95,14 @@ static uint32_t entry_index = 0U; // current log entry index
 bool add_log(LOG_LEVEL level, LOG_DATA_TYPE type, LOG_ACTION action, void *data, uint32_t data_size)
 {
     // check parameters
-    if (level >= LOG_ACTION_ALL || type >= LOG_DATA_TYPE_ALL || action >= LOG_ACTION_ALL)
-
+    if (level >= LOG_LEVEL_ALL || type >= LOG_DATA_TYPE_ALL || action >= LOG_ACTION_ALL)
     {
         return false;
+    }
+
+    if (entry_index >= MAX_LOG_ENTRIES)
+    {
+        return false; // avoid buffer overflow
     }
 
     // create log entry
@@ -108,21 +112,33 @@ bool add_log(LOG_LEVEL level, LOG_DATA_TYPE type, LOG_ACTION action, void *data,
     entry_ptr->type = type;
     entry_ptr->data_size = data_size;
     entry_ptr->data = malloc(data_size);
+    if (!entry_ptr->data)
+    {
+        return false;
+    }
     memcpy(entry_ptr->data, data, data_size);
 
-    // increment entry index
     entry_index++;
 
     // save log entries to file if needed
-    if (entry_index >= MAX_LOG_ENTRIES || action == LOG_ACTION_SAVE_NOW)
+    if (entry_index == MAX_LOG_ENTRIES || action == LOG_ACTION_SAVE_NOW)
     {
-        // save log entries to file
         FILE *file = fopen(LOG_FILE_NAME, "ab");
         if (file == NULL)
         {
             return false;
         }
-        fwrite(log_entries, sizeof(LOG_ENTRY), entry_index, file);
+
+        for (uint32_t i = 0; i < entry_index; i++)
+        {
+            LOG_ENTRY *entry = &log_entries[i];
+            fwrite(&entry->timestamp, sizeof(entry->timestamp), 1, file);
+            fwrite(&entry->level, sizeof(entry->level), 1, file);
+            fwrite(&entry->type, sizeof(entry->type), 1, file);
+            fwrite(&entry->data_size, sizeof(entry->data_size), 1, file);
+            fwrite(entry->data, entry->data_size, 1, file); // write actual struct data
+        }
+
         fclose(file);
 
         // free allocated memory
@@ -135,6 +151,11 @@ bool add_log(LOG_LEVEL level, LOG_DATA_TYPE type, LOG_ACTION action, void *data,
     }
 
     return true;
+}
+
+void remove_log()
+{
+    remove(LOG_FILE_NAME);
 }
 
 #endif
